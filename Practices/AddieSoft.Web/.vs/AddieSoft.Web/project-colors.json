@@ -5,7 +5,12 @@
       "ProjectGuid": "fdd579ec-6cf6-498d-9b23-df2a48bddd8b",
       "DisplayName": "AddieSoft",
       "ColorIndex": 0
+    },
+    "90c96994-c921-4d52-8842-3cfb7596d6e7": {
+      "ProjectGuid": "90c96994-c921-4d52-8842-3cfb7596d6e7",
+      "DisplayName": "AddieSoft.Membership",
+      "ColorIndex": 1
     }
   },
-  "NextColorIndex": 1
+  "NextColorIndex": 2
 }

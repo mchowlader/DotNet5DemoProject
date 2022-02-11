@@ -1,4 +1,8 @@
 using AddieSoft.Data;
+using AddieSoft.Membership;
+using AddieSoft.Membership.Contexts;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,9 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AddieSoft
 {
@@ -31,17 +32,43 @@ namespace AddieSoft
         }
 
         public IConfiguration Configuration { get; }
+        public ILifetimeScope AutofacContainer { get; set; }
         public IWebHostEnvironment WebHostEnvironment { get; set; }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            var connectionInfo = GetConnectionStringAndAssemblyName();
+
+            builder.RegisterModule(new MembershipModule(connectionInfo.connectionString,
+                connectionInfo.migrationAssemblyName))
+                .RegisterModule(new WebModule());
+        }
+
+        private (string connectionString, string migrationAssemblyName) GetConnectionStringAndAssemblyName()
+        {
+            var connectionStringName = "DefaultConnection";
+            var connectionString = Configuration.GetConnectionString(connectionStringName);
+            var migrationAssemblyName = typeof(Startup).Assembly.FullName;
+            return (connectionString, migrationAssemblyName);
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionInfo = GetConnectionStringAndAssemblyName();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            
+           
+            services.AddDbContext<MembershipDbContext>(options =>
+                    options.UseSqlServer(connectionInfo.connectionString, b =>
+                    b.MigrationsAssembly(connectionInfo.migrationAssemblyName)));
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -72,6 +99,8 @@ namespace AddieSoft
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
