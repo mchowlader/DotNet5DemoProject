@@ -39,7 +39,7 @@ namespace AddieSoft.Models
                 dataTableModel.PageIndex,
                 dataTableModel.PageSize,
                 dataTableModel.SearchText,
-                dataTableModel.GetSortText(new string[] {"Name", "Address", "Gender", "MobileNumber", "CreatedDate" }));
+                dataTableModel.GetSortText(new string[] {"Photo", "Name", "Address", "Gender", "MobileNumber", "CreatedDate" }));
             return new
             {
                 recordsTotal = data.total,
@@ -47,6 +47,7 @@ namespace AddieSoft.Models
                 data = (from record in data.records
                             select new string[]
                             {
+                                record.Photo,
                                 record.Name,
                                 record.Address,
                                 record.Gender,

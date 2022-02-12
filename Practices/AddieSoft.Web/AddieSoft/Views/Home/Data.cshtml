@@ -17,6 +17,7 @@
                     <table id="courses" class="table table-bordered table-hover">
                         <thead>
                             <tr>
+                                <th>Photo</th>
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Gender</th>
@@ -27,6 +28,7 @@
                         </thead>
                         <tfoot>
                             <tr>
+                                <th>Photo</th>
                                 <th>Name</th>
                                 <th>Address</th>
                                 <th>Gender</th>
@@ -55,10 +57,18 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": "/Home/GetData",
+
                 "columnDefs": [
                     {
                         "orderable": false,
-                        "targets": 5,
+                        "targets": 0,
+                        "render": function (data, type, row) {
+                            return `<img src="/${data}" asp-append-version="true" height = 50px />`;
+                        }
+                    },
+                    {
+                        "orderable": false,
+                        "targets": 6,
                         "render": function (data, type, row) {
                             return `<button type="submit" class="btn btn-info btn-sm" onclick="window.location.href='/home/edit/${data}'" value='${data}'>
                                         <i class="fas fa-pencil-alt">

@@ -1,4 +1,5 @@
-﻿using AddieSoft.Membership.BusinessObjects;
+﻿using AddieSoft.Foundation.Services;
+using AddieSoft.Membership.BusinessObjects;
 using AddieSoft.Membership.UnitOfWorks;
 using AutoMapper;
 using System;
@@ -12,11 +13,13 @@ namespace AddieSoft.Membership.Services
     public class UserService : IUserService
     {
         private IMembershipUnitOfWork _unitOfWork;
+        private IPathService _pathService;
        //private readonly IMapper _mapper;
 
-        public UserService(IMembershipUnitOfWork unitOfWork)
+        public UserService(IMembershipUnitOfWork unitOfWork, IPathService pathService)
         {
             _unitOfWork = unitOfWork;
+            _pathService = pathService;
             
         }
 
@@ -57,8 +60,22 @@ namespace AddieSoft.Membership.Services
                               CreatedDate = user.CreatedDate,
                               Gender = user.Gender,
                               MobileNumber = user.MobileNumber,
+                              Photo = user.Photo,
                               Id = user.Id
                           }).ToList();
+
+            for(var i = 0; i < result.Count; i++)
+            {
+                if(result[i].Photo == null)
+                {
+                    var defaultProfileImage = _pathService.DefaultProfileImage;
+                    result[i].Photo = _pathService.AttachPathWithDefaultProfileImage(defaultProfileImage);
+                }
+                else
+                {
+                    result[i].Photo = _pathService.AttachPathWithFile(result[i].Photo);
+                }
+            }
 
             return (result, userList.total, userList.totalDisplay);
         }
@@ -73,6 +90,7 @@ namespace AddieSoft.Membership.Services
                 CreatedDate = student.CreatedDate,
                 MobileNumber = student.MobileNumber,
                 Gender = student.Gender,
+                Photo = student.Photo,
             };
         }
 
@@ -88,6 +106,7 @@ namespace AddieSoft.Membership.Services
                 userEntity.CreatedDate = DateTime.Now;
                 userEntity.Gender = user.Gender;
                 userEntity.MobileNumber = user.MobileNumber;
+                userEntity.Photo = user.Photo;
 
                 await _unitOfWork.SaveAsync();
             }

@@ -1,4 +1,6 @@
 using AddieSoft.Data;
+using AddieSoft.Foundation;
+using AddieSoft.Foundation.Utilities;
 using AddieSoft.Membership;
 using AddieSoft.Membership.Contexts;
 using Autofac;
@@ -40,6 +42,8 @@ namespace AddieSoft
             var connectionInfo = GetConnectionStringAndAssemblyName();
 
             builder.RegisterModule(new MembershipModule(connectionInfo.connectionString,
+                connectionInfo.migrationAssemblyName))
+                .RegisterModule(new FoundationModule(connectionInfo.connectionString,
                 connectionInfo.migrationAssemblyName))
                 .RegisterModule(new WebModule());
         }
@@ -88,6 +92,8 @@ namespace AddieSoft
                 options.Cookie.IsEssential = true;
             });
 
+            services.Configure<PathSettings>(Configuration.GetSection("Paths"));
+            services.Configure<DefaultImageSettings>(Configuration.GetSection("DefaultImageSettings"));
 
             services.AddControllersWithViews();
             services.AddHttpContextAccessor();
