@@ -26,8 +26,6 @@ namespace AddieSoft.Models
         private IFileStoreUtility _fileStoreUtility;
         private ISystemImageResizer _systemImageResizer;
 
-
-
         public EditModel()
         {
         }
@@ -55,7 +53,6 @@ namespace AddieSoft.Models
         internal async Task LoadDataAsync(int Id)
         {
             var data = await _service.LoadDataAsync(Id);
-
 
             if (data != null)
             {

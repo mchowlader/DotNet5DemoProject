@@ -11,7 +11,6 @@ namespace AddieSoft.Models
 {
     public class CreateModel
     {
-
         public string Name { get; set; }
         public string Address { get; set; }
         public int MobileNumber { get; set; }
@@ -19,7 +18,6 @@ namespace AddieSoft.Models
         public string Gender { get; set; }
         public string Photo { get; set; }
         public IFormFile FromFile { get; set; }
-
 
         private ILifetimeScope _scope;
         private IUserService _service;
@@ -58,9 +56,9 @@ namespace AddieSoft.Models
             }
             else
             {
-                if(Photo != null)
-                    Photo = null;
+                Photo = "DefaultImage.jpg";
             }
+
             var user = new UserInfo()
             {
                 Name = Name,
